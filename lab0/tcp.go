@@ -1,15 +1,32 @@
-package lab0
+package main
 
 import (
+	"fmt"
 	"net"
 )
 
-type listenerInterface func(string, int, handlerInterface)
+func TcpListener(IP string, port int, handler func(net.Conn) error) {
+	listener, err := net.Listen("tcp", IP+":"+string(port))
 
-type handlerInterface func(conn net.Conn)
+	if err != nil {
+		fmt.Println("Error listening", err.Error())
+		return // terminate
+	}
 
-func TCPListener(host string, port int, handler handlerInterface) {
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			fmt.Println("Error accepting", err.Error())
+			return
+		}
+
+		err = handler(conn)
+		if err != nil {
+			fmt.Println("Error handling connection", err.Error())
+		}
+	}
 }
 
-func TCPHandler(conn net.Conn) {
+func TcpHandler() error {
+
 }
