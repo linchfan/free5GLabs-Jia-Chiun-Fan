@@ -13,7 +13,7 @@ func main() {
     }()
     ch := make(chan int)
 
-	// Create a timer which can be canceled.
+	// Create a timer which can be canceled after all the functions are done.
 	timer := time.NewTimer(time.Second * 1)
 	defer timer.Stop()
 
