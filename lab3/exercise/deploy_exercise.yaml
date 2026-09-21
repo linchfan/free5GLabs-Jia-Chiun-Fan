@@ -11,8 +11,13 @@ services:
     cap_add:
       - NET_ADMIN
     networks:
+      n3net:
+        ipv4_address: 10.100.3.100
+      n4net:
+        ipv4_address: 10.100.4.100
       n6net:
         ipv4_address: 10.100.6.100
+      
 
   free5gc-n6gw:
     container_name: n6gw
@@ -73,6 +78,8 @@ services:
     environment:
       GIN_MODE: release
     networks:
+      n2net:
+        ipv4_address: 10.100.2.100
       privnet:
         aliases:
           - amf.free5gc.org
@@ -145,7 +152,9 @@ services:
       - ./cert:/free5gc/cert
     environment:
       GIN_MODE: release
-    networks:
+    networks:      
+      n4net:
+        ipv4_address: 10.100.4.101
       privnet:
         aliases:
           - smf.free5gc.org
@@ -247,7 +256,10 @@ services:
     devices:
       - "/dev/net/tun"
     networks:
-      
+      n2net:
+        ipv4_address: 10.100.2.101
+      n3net:
+        ipv4_address: 10.100.3.101    
     depends_on:
       - free5gc-amf
       - free5gc-upf
