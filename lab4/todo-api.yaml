@@ -6,7 +6,7 @@ info:
     You can do CRUD operations on tasks.
   version: 1.0.0
 servers:
-  - url: http://localhost:8080
+  - url: http://192.168.56.102:8080
 tags:
   - name: tasks
     description: CRUD operations on tasks
@@ -109,8 +109,10 @@ paths:
             $ref: "#/components/schemas/TaskId"
       requestBody:
         required: true
-        schema:
-          $ref: "#/components/schemas/UpdateTaskRequest"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaskRequest"
       responses:
         "200":
           description: Succeeded to update the task
