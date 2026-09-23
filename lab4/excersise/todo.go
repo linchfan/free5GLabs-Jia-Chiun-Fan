@@ -51,7 +51,7 @@ func (app *TodoApp) CreateTask(name string) TodoTask {
 		Title:     name,
 		Completed: false,
 	}
-	app.nextId++
+	// app.nextId++
 
 	app.Tasks = append(app.Tasks, newTask)
 	app.nextId++
@@ -107,7 +107,8 @@ func TodoTaskGetOne(c *gin.Context) {
 
 func TodoTaskGetAll(c *gin.Context) {
 	// TODO: Implement the get all tasks endpoint
-	c.Status(http.StatusNotImplemented)
+	tasks := globalApp.GetTaskAll()
+	c.JSON(http.StatusOK, tasks)
 }
 
 func TodoTaskCreate(c *gin.Context) {
@@ -128,12 +129,57 @@ func TodoTaskCreate(c *gin.Context) {
 
 func TodoTaskUpdate(c *gin.Context) {
 	// TODO: Implement the update task endpoint
-	c.Status(http.StatusNotImplemented)
+	id := c.Params.ByName("id")
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Id must be an integer"})
+		return
+	}
+
+	type RequestBody struct {
+		Name      string `json:"name"`
+		Completed bool   `json:"completed"`
+	}
+
+	var body RequestBody
+
+	err = c.ShouldBindBodyWithJSON(&body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	updatedTask := globalApp.UpdateTask(idInt, body.Name, body.Completed)
+	if updatedTask == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, updatedTask)
 }
 
 func TodoTaskDelete(c *gin.Context) {
 	// TODO: Implement the delete task endpoint
-	c.Status(http.StatusNotImplemented)
+	id := c.Params.ByName("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID is required"})
+		return
+	}
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Id must be an integer"})
+		return
+	}
+
+	err = globalApp.DeleteTask(idInt)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func CorsMiddleware() gin.HandlerFunc {
@@ -150,7 +196,10 @@ func main() {
 	engine.Use(CorsMiddleware())
 
 	engine.POST("/tasks", TodoTaskCreate)
+	engine.GET("/tasks", TodoTaskGetAll)
 	engine.GET("/tasks/:id", TodoTaskGetOne)
+	engine.PUT("/tasks/:id", TodoTaskUpdate)
+	engine.DELETE("/tasks/:id", TodoTaskDelete)
 
 	// TODO: Add the missing endpoints for the update and delete operations
 
