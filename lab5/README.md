@@ -156,30 +156,38 @@ You can observe from the 'Info' field what setup procedures the UE performed wit
 ![wspackets](./images/wireshark_packets.png)
 
 #### Message Type Explanation  
-- NGSetupRequest & NGSetupResponse : The purpose of the NG Setup procedure is to exchange application level data needed for the NG-RAN node and the AMF to correctly interoperate on the NG-C interface. This procedure shall be the first NGAP procedure triggered after the TNL association has become operational. The procedure uses non-UE associated signalling. 
+- NGSetupRequest & NGSetupResponse : The purpose of the NG Setup procedure is to exchange application level data needed for the NG-RAN node and the AMF to correctly interoperate on the NG-C interface. This procedure shall be the first NGAP procedure triggered after the TNL association has become operational. The procedure uses non-UE associated signalling.
+(NG-RAN Node & AMF建立互通關係)
 
 - InitialUEMessage (Registration request) : The Initial UE Message procedure is used when the NG-RAN node has received from the radio interface the first uplink NAS message transmitted on an RRC connection to be forwarded to an AMF.
+(UE註冊請求訊息)
 
 - DownlinkNASTransport : The Downlink NAS Transport procedure is used when the AMF only needs to send a NAS message transparently via the NG-RAN node to the UE, and a UE-associated logical NG-connection exists for the UE or the AMF has received the RAN UE NGAP ID IE in an INITIAL UE MESSAGE message either over this NG interface instance or another NG interface instance.
+(AMF傳送訊息回UE)
 
 - UplinkNASTransport : The Uplink NAS Transport procedure is used when the NG-RAN node has received from the radio interface a NAS message to be forwarded to the AMF to which a UE-associated logical NG-connection for the UE exists.
+(UE傳送訊息給AMF)
 
 - InitialContextSetup : The purpose of the Initial Context Setup procedure is to establish the necessary overall initial UE Context at the NGRAN node, when required, including PDU session context, the Security Key, Mobility Restriction List, UE Radio Capability and UE Security Capabilities, etc. The AMF may initiate the Initial Context Setup procedure if a UEassociated logical NG-connection exists for the UE or if the AMF has received the RAN UE NGAP ID IE in an INITIAL UE MESSAGE message either over this NG interface instance or another NG interface instance, The procedure uses UE-associated signalling.
+(AMF請求NG-RAN node建立起需要保存之UE Context，包含UE State & Info.)
 
 - PDUSessionResourceSetup : The purpose of the PDU Session Resource Setup procedure is to assign resources on Uu and NG-U for one or several PDU session resources and the corresponding QoS flows, and to setup corresponding Data Radio Bearers for a given UE. The procedure uses UE-associated signalling.
+(AMF請求NG-RAN node建立起接下來PDU Session所需資源)
 
 - PDUSessionResourceRelease : The purpose of the PDU Session Resource Release procedure is to enable the release of already established PDU session resources for a given UE. The procedure uses UE-associated signalling.
+(AMF請求NG-RAN node將先前建立起之PDU Session資源釋放)
 
 - UEContextRelease : The purpose of the UE Context Release Request procedure is to enable the NG-RAN node to request the AMF to
 release the UE-associated logical NG-connection due to NG-RAN node generated reasons. The procedure uses UEassociated signalling.
+(NG-RAN node向AMF請求將先前建立起之UE Context釋放)
 
 #### Protocol Stack & Packet Structure & Information Element (IE)
 > Example : InitialUEMessage (Registration Request)
  
 The protocol stack in this packet is :
 
-- SCTP
-- NGAP  
+- SCTP (NG-RAN Node 與 AMF 間承載 NGAP 的傳輸層協議，與 TCP 同屬 Transport Layer)
+- NGAP (NG-RAN Node 與 AMF 之間進行控制面 signaling 的App. Layer協議)
 
 ![correspond_layer](./images/osi.png)
 
@@ -262,7 +270,26 @@ $ ./packetrusher ue
 ### Question
 > Observe the captured PFCP packets and answer the following questions.
 #### Part 1 : Write down the Message Type of each packet in order
+1. PFCP Association Setup Request
+2. PFCP Association Setup Response
+
+3. PFCP Heartbeat Request
+4. PFCP Heartbeat Response
+
+5. PFCP Session Establishment Request
+6. PFCP Session Establishment Response
+
+7. PFCP Session Modification Request
+8. PFCP Session Modification Response
+
+9. PFCP Session Report Request
+10. PFCP Session Report Response
+
+11. PFCP Session Deletion Request
+12. PFCP Session Deletion Response
+
 #### Part 2 : Describe the Protocol Stack of the PFCP packet
+Ethernet → IPv4 → UDP → PFCP
 
 ## Reference
 - [3GPP TS 38.413](https://www.etsi.org/deliver/etsi_ts/138400_138499/138413/15.00.00_60/ts_138413v150000p.pdf)
