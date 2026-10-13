@@ -64,6 +64,11 @@ A CVE in a base image is *not* the same problem as a CVE in `golang.org/x/net`: 
 > [!NOTE]
 > An SBOM only tells you whether the **material** you used is safe. It says nothing about the bugs you wrote yourself. That is what Part 2 is for.
 
+#### Personal NOTE
+- **SBOM**: 軟體的成分表，包含該軟體所使用的直接相依(程式內直接引用)與遞移相依(直接引用套件內引用)套件，以及其版本等資訊，用以在引用套件被發現有CVE(資安漏洞識別編號)時，快速進行盤查、分析與修正。
+- 而在free5GC中有分為複數層，每層問題來源、負責開發者與修復方式皆不同，所以各層需各自生成自己的SBOM，最後彙整。
+- 生成SBOM後要進行保存，接著進行漏洞掃描，若有問題則讓CI Pipeline失敗或提出issue，不讓有問題版本merged。
+
 ## Part 2: Know What You Wrote (SAST, DAST, Fuzzing)
 
 To kill coding mistakes in the cradle, we introduce three complementary techniques into CI/CD.
@@ -102,6 +107,11 @@ Practical tips:
 - Every crash found by the fuzzer should become a **regression test** (Go writes the minimized input under `testdata/fuzz/<FuzzTestName>/`, which future `go test` runs execute)
 - Run a short fuzz session on every PR, and a long one nightly -- fuzzing is a marathon, not a sprint
 - Fuzz the *decoding* path first; that is where attacker-controlled bytes arrive
+
+#### Personal NOTE
+- **SAST**: 靜態分析，直接看程式碼有無有潛在bug或安全漏洞，但可能會有False Positive(誤報)，即工具回報問題，但實際上不存在該漏洞，所以需要逐項審核
+- **DAST**: 動態分析，實際執行程式並測試其行為
+- **Fuzzing**: 模糊測試，生成可以會出錯的測資，嘗試讓程式出錯或出現異常行為
 
 ## Part 3: The LLM Era -- Security Agents
 
